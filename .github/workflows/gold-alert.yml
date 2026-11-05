@@ -1,0 +1,27 @@
+name: gold-alert
+
+on:
+  schedule:
+    - cron: "1,16,31,46 * * * 0-5"
+  workflow_dispatch:
+    inputs:
+      test:
+        description: "Send a test Telegram message"
+        type: boolean
+        default: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install yfinance pandas requests
+      - run: python gold_alert.py
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TEST_MODE: ${{ github.event.inputs.test }}
+
